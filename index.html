@@ -6,7 +6,6 @@
     <title>Secure Link</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Telegram Theme Colors */
         :root {
             --bg-color: var(--tg-theme-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #000000);
@@ -68,16 +67,18 @@
             const destination = urlParams.get('link');
 
             if (destination) {
-                // 1. Open the Ad in a new tab (Background)
-                window.open(directAdLink, '_blank');
-                
-                // 2. Visual Feedback
                 document.getElementById('goBtn').innerText = "Opening...";
 
-                // 3. Redirect the Mini App to the Article
+                // --- THE MOBILE FIX ---
+                
+                // 1. Force Telegram to open the AD in external browser (Chrome/Safari)
+                tg.openLink(directAdLink);
+                
+                // 2. Wait 1 second, then redirect THIS screen to the Article
                 setTimeout(() => {
                     window.location.href = destination;
-                }, 500); // 0.5 second delay to ensure Ad opens first
+                }, 1000);
+
             } else {
                 alert("No link provided");
             }
