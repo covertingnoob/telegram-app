@@ -53,7 +53,7 @@
 <body>
 
     <div class="card">
-        <h2>Article Ready</h2>
+        <h2>Article Ready F</h2>
         <p>Tap below to access the full story.</p>
         <button class="btn" id="goBtn">Read Article ➔</button>
     </div>
@@ -67,24 +67,31 @@
             const destination = urlParams.get('link');
 
             if (destination) {
-                document.getElementById('goBtn').innerText = "Opening...";
+                document.getElementById('goBtn').innerText = "Loading...";
 
-                // ⬇️ 2. REWARDED POPUP LOGIC ⬇️
+                // ⬇️ 2. IN-APP INTERSTITIAL LOGIC ⬇️
                 
-                // Using the specific ID you provided: show_10408919
                 if (typeof show_10408919 === 'function') {
                     
-                    show_10408919('pop').then(() => {
-                        // The SDK says the ad event is handled.
-                        // Now we redirect to the content.
+                    show_10408919({
+                        type: 'inApp',
+                        inAppSettings: {
+                            frequency: 1, // Allow it to show multiple times testing
+                            capping: .2,
+                            interval: 0,
+                            timeout: 5, // 0 = Show Immediately (No 5s delay)
+                            everyPage: true
+                        }
+                    }).then(() => {
+                        // This runs after the user CLOSES the overlay
                         window.location.href = destination;
                     }).catch(e => {
-                        // If the ad fails (e.g. AdBlock), we still redirect.
+                        // If it fails to show, redirect anyway
                         window.location.href = destination;
                     });
 
                 } else {
-                    // Fallback if script didn't load
+                    // Fallback
                     window.location.href = destination;
                 }
                 
