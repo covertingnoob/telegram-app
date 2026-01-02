@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #fff;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container { padding: 20px; }
+        .btn {
+            background-color: #3390ec;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Article Ready</h2>
+        <p>Tap continue to read the full story.</p>
+        <button class="btn" id="goBtn">Continue ➔</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        // ⚠️ REPLACE THE LINK BELOW WITH YOUR MONETAG DIRECT LINK ⚠️
+        const adLink = "https://google.com"; 
+
+        document.getElementById('goBtn').addEventListener('click', () => {
+            // 1. Get the destination URL (The Blog Post)
+            const urlParams = new URLSearchParams(window.location.search);
+            const destination = urlParams.get('link');
+
+            if (destination) {
+                // 2. Open Ad in new tab
+                window.open(adLink, '_blank');
+                
+                // 3. Visual feedback
+                document.getElementById('goBtn').innerText = "Opening...";
+
+                // 4. Redirect to content
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 500);
+            } else {
+                alert("No link provided!");
+            }
+        });
+    </script>
+</body>
+</html>
