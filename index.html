@@ -11,7 +11,8 @@
             --text-color: var(--tg-theme-text-color, #000000);
             --btn-color: var(--tg-theme-button-color, #3390ec);
             --btn-text: var(--tg-theme-button-text-color, #ffffff);
-            --green-color: #28a745;
+            --disabled-color: #a0a0a0;
+            --success-color: #28a745;
         }
         body {
             background-color: var(--bg-color);
@@ -24,36 +25,80 @@
             height: 100vh;
             margin: 0;
         }
-        .card { padding: 20px; text-align: center; max-width: 300px; }
-        h2 { margin-bottom: 10px; }
-        p { opacity: 0.7; margin-bottom: 30px; }
+        .card { padding: 20px; text-align: center; max-width: 320px; width: 90%; }
         
+        h2 { margin-bottom: 5px; }
+        
+        .instructions { 
+            background: rgba(255, 193, 7, 0.2); 
+            color: #d68b00; 
+            padding: 10px; 
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
         .btn {
-            background-color: var(--btn-color);
-            color: var(--btn-text);
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 16px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
             width: 100%;
-            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
 
-        /* Success State Style */
-        .btn-success {
-            background-color: var(--green-color);
-            transform: scale(1.05);
+        /* Button 1: Ad Unlock */
+        #btn1 {
+            background-color: var(--btn-color);
+            color: var(--btn-text);
         }
+
+        /* Button 2: Content (Initially Disabled) */
+        #btn2 {
+            background-color: #e0e0e0; /* Gray */
+            color: #888;
+            pointer-events: none; /* Not clickable yet */
+        }
+
+        /* Active State for Button 2 */
+        #btn2.active {
+            background-color: var(--success-color);
+            color: white;
+            pointer-events: auto; /* Now clickable */
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Completed State for Button 1 */
+        #btn1.completed {
+            background-color: #e0e0e0;
+            color: #888;
+            text-decoration: line-through;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2 id="title">Article Locked L</h2>
-        <p id="desc">Tap the button to unlock the secure link.</p>
-        <button class="btn" id="mainBtn">🔓 Unlock Link</button>
+        <h2>Content Locked</h2>
+        
+        <!-- INSTRUCTION BOX -->
+        <div class="instructions">
+            ⚠️ <strong>Instruction:</strong> Tap Step 1 to open the sponsor. Return here to enable Step 2.
+        </div>
+
+        <!-- BUTTON 1: THE AD -->
+        <button class="btn" id="btn1">🔓 Step 1: Unlock Link</button>
+
+        <!-- BUTTON 2: THE CONTENT -->
+        <button class="btn" id="btn2">📄 Step 2: Read Article</button>
     </div>
 
     <script>
@@ -65,50 +110,43 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const destination = urlParams.get('link');
-        const mainBtn = document.getElementById('mainBtn');
-        const title = document.getElementById('title');
-        const desc = document.getElementById('desc');
+        const btn1 = document.getElementById('btn1');
+        const btn2 = document.getElementById('btn2');
 
-        // Check if user already unlocked this specific link
-        // We use the destination URL as a unique key
-        const isUnlocked = localStorage.getItem(destination);
-
-        if (isUnlocked === 'true') {
-            showSuccessState();
+        // Check if already unlocked in this session
+        if (localStorage.getItem(destination) === 'true') {
+            activateStep2();
         }
 
-        mainBtn.addEventListener('click', () => {
-            if (!destination) { alert("No link provided"); return; }
+        // --- STEP 1 CLICK (AD) ---
+        btn1.addEventListener('click', () => {
+            if (!destination) return;
 
-            // STATE 1: If NOT unlocked yet -> Open Ad
-            if (!localStorage.getItem(destination)) {
-                
-                // 1. Mark as unlocked in storage
-                localStorage.setItem(destination, 'true');
-                
-                // 2. Open Ad (Hijack window or New Tab)
-                // Using tg.openLink ensures it goes to external browser, 
-                // allowing user to easily switch back to Telegram.
-                tg.openLink(directAdLink);
+            // 1. Open Ad
+            tg.openLink(directAdLink);
+            
+            // 2. Unlock Step 2 immediately (so it's ready when they return)
+            activateStep2();
+            
+            // 3. Save state
+            localStorage.setItem(destination, 'true');
+        });
 
-                // 3. Update UI to "Success" immediately
-                showSuccessState();
-
-            } 
-            // STATE 2: If ALREADY unlocked -> Open Article
-            else {
+        // --- STEP 2 CLICK (CONTENT) ---
+        btn2.addEventListener('click', () => {
+            if (destination) {
                 tg.openLink(destination);
             }
         });
 
-        function showSuccessState() {
-            title.innerText = "Article Ready L";
-            desc.innerText = "Link unlocked successfully.";
-            mainBtn.innerText = "📖 Read Article";
-            mainBtn.classList.add('btn-success');
+        function activateStep2() {
+            // Visual changes
+            btn1.classList.add('completed');
+            btn1.innerText = "✅ Step 1: Unlocked";
+            
+            btn2.classList.add('active');
+            btn2.innerText = "🚀 Step 2: Open Article";
         }
-
     </script>
 </body>
 </html>
-
