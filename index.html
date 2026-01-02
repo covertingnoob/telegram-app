@@ -6,7 +6,7 @@
     <title>Secure Link</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-   <script src='//munqu.com/sdk.js' data-zone='10408919' data-sdk='show_10408919'></script>
+    <script src='//munqu.com/sdk.js' data-zone='10408919' data-sdk='show_10408919'></script>
 
     <style>
         :root {
@@ -50,7 +50,7 @@
 <body>
 
     <div class="card">
-        <h2>Article Ready P</h2>
+        <h2>Article Ready C</h2>
         <p>Tap below to access the full story.</p>
         <button class="btn" id="goBtn">Read Article ➔</button>
     </div>
@@ -66,26 +66,18 @@
             if (destination) {
                 document.getElementById('goBtn').innerText = "Opening...";
 
-                // ⬇️ 2. THE SPLIT STRATEGY ⬇️
-                
+                // 1. Trigger the Ad (Let it handle itself in Telegram)
                 if (typeof show_10408919 === 'function') {
-                    
-                    // 1. Trigger the Ad (Let it handle itself in Telegram)
                     show_10408919({ type: 'pop' });
 
-                    // 2. Force the CONTENT to open in External Browser (Chrome/Safari)
-                    // We add a tiny delay to ensure the Ad triggers first
+                    // 2. Force the content to open in the external browser (add delay to ensure the ad shows)
                     setTimeout(() => {
-                        tg.openLink(destination);
-                    }, 500);
-
+                        tg.openLink(destination); // Open the article in the external browser
+                    }, 1500);  // Increase delay slightly to ensure the ad popup has enough time to show
                 } else {
-                    // Fallback: Just open content in External Browser
+                    // Fallback: If the ad doesn't load, just open the article
                     tg.openLink(destination);
                 }
-                
-                // ⬆️ END LOGIC ⬆️
-
             } else {
                 alert("No link provided");
             }
