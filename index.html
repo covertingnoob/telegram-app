@@ -6,7 +6,7 @@
     <title>Secure Link</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-   <script src='//munqu.com/sdk.js' data-zone='10408919' data-sdk='show_10408919'></script>
+    <script src='//munqu.com/sdk.js' data-zone='10408919' data-sdk='show_10408919'></script>
 
     <style>
         :root {
@@ -53,7 +53,7 @@
 <body>
 
     <div class="card">
-        <h2>Article Ready V</h2>
+        <h2>Article Ready</h2>
         <p>Tap below to access the full story.</p>
         <button class="btn" id="goBtn">Read Article ➔</button>
     </div>
@@ -67,27 +67,28 @@
             const destination = urlParams.get('link');
 
             if (destination) {
-                document.getElementById('goBtn').innerText = "Loading...";
+                document.getElementById('goBtn').innerText = "Opening...";
 
-                // ⬇️ 2. SDK INTEGRATION ⬇️
+                // ⬇️ 2. REWARDED POPUP LOGIC ⬇️
                 
-                // Note: We removed 'pop'. We are calling it empty to get the Interstitial.
+                // Using the specific ID you provided: show_10408919
                 if (typeof show_10408919 === 'function') {
                     
-                    show_10408919().then(() => {
-                        // This runs ONLY after the user closes the Ad
+                    show_10408919('pop').then(() => {
+                        // The SDK says the ad event is handled.
+                        // Now we redirect to the content.
                         window.location.href = destination;
                     }).catch(e => {
-                        // If ad fails or adblocker exists, go to blog immediately
+                        // If the ad fails (e.g. AdBlock), we still redirect.
                         window.location.href = destination;
                     });
 
                 } else {
-                    // Fallback if script missing
+                    // Fallback if script didn't load
                     window.location.href = destination;
                 }
                 
-                // ⬆️ END INTEGRATION ⬆️
+                // ⬆️ END LOGIC ⬆️
 
             } else {
                 alert("No link provided");
